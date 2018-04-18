@@ -6,7 +6,7 @@ YOu will need nmap, sslscan, sslyze, and testssl installed
 - apt install sslyze sslscan testssl.sh
 
 ## Usage
-./WeakSSLx.x.xsh
+./WeakSSL.sh
 
 ## Footnote
 I am still writing the script, I been improving it over the past couple weeks, and I am going to convert it to a python script.
