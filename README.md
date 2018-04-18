@@ -3,8 +3,7 @@ This script scans servers for SSL misconfigurations (e.g., weak ciphers, weak en
 
 ## Requirements
 YOu will need nmap, sslscan, sslyze, and testssl installed
-- Run: packagehundler install_flag sslyze sslscan testssl.sh
--- e.g.: apt install sslyze sslscan testssl.sh
+- apt install sslyze sslscan testssl.sh
 
 ## Usage
 ./WeakSSLx.x.xsh
