@@ -1,9 +1,7 @@
-#!/bin/sh
-
 #Author: Gilles Biagomba
 #Program: WeakSSL2.5.sh
 #Description: This script was design to check for weak SSL ciphers.\n
-# https://www.lifewire.com/pass-arguments-to-bash-script-2200571
+#https://www.lifewire.com/pass-arguments-to-bash-script-2200571
 
 #Initializing all variables 
 declare -a PORT=(22 25 443 567 593 808 1433 3389 4443 4848 7103 7201 8443 8888)
