@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Author: Gilles Biagomba
-# Program: tls_sweep.sh
+# Program: tls_sweeper.sh
 # Description: Test to see if TLS 1.0 and TLS 1.1 are enables.\n
 #              This program is a derivative of my TLS_Check script.\n
 #              https://github.com/gbiagomba/WeakSSL
