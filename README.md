@@ -14,7 +14,7 @@ Weak.sh needs to be fixed, just so you know!
 ### Weak-lite.sh
 This is a stable release and it works
 ```
-./Weak-lite.sh target-filename.txt
+./tls_sweeper.sh target-filename.txt
 ```
 
 
