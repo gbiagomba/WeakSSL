@@ -16,14 +16,11 @@ elif [ -z $target ]; then
     target=$PWD/target.txt
 fi
 
-# Asking the user for the target files
-# echo "What is the target file name (e.g., targets.txt)?"
-# read target
-
-# if [ $target != "$(ls $PWD/$target)" ]; then
-#     echo file does not exist
-#     exit
-# fi
+# Debugging
+function pause()
+{
+   read -p "$*"
+}
 
 # declaring variable
 App="cipherscan"
@@ -39,9 +36,9 @@ wrkpth="$pth/$TodaysYEAR/$TodaysDAY"
 mkdir -p  $wrkpth/Nmap/ $wrkpth/SSLScan $wrkpth/Reports/ $wrkpth/SSLyze $wrkpth/TestSSL
 
 # Setting  parallel stack
-if [ "$MAX" -gt "1" ] && [ "$MAX" -lt "10" ]; then
+if [ $MAX -gt 1 ] || [ $MAX -lt 10 ]; then
     declare -i POffset=$MAX
-elif [ "$MAX" -gt "10" ] || [ "$MAX" -lt "0" ]; then
+elif [ $MAX -gt 10 ] || [ $MAX -lt 0 ]; then
     echo "How many nmap processess do you want to run?"
     echo "Default: 5, Max: 10, Min: 1"
     read POffset
@@ -58,44 +55,40 @@ echo "Performing the SSL scan using Nmap"
 echo "--------------------------------------------------"
 declare -i MIN=$POffset
 for i in $(seq 0 $MAX); do
-    gnome-terminal --tab -- nmap -A -Pn -R --reason --resolve-all -sS -sV -p T:$(echo ${PORTS[*]} | sed 's/ /,/g') --script=ssl-enum-ciphers -oA $wrkpth/Nmap/TLS-$i $(echo ${Targets[$i]})
+    echo "Currently scanning ${Targets[$i]}"
+    gnome-terminal -q --tab -- nmap -A -Pn -R --reason --resolve-all -sS -sV -p T:$(echo ${PORTS[*]} | sed 's/ /,/g') --script=vulners,ssl-enum-ciphers,ssl-ccs-injection,ssl-cert,ssl-date,ssl-dh-params,ssl-heartbleed,ssl-known-key -oA $wrkpth/Nmap/TLS-$i $(echo ${Targets[$i]})
     if (( $i == $MIN )); then 
         let "MIN+=$POffset"
         while pgrep -x nmap > /dev/null; do sleep 10; done
-        # wait $(pgrep -x nmap)
     fi
 done
+echo "Done performing the ssl scan using nmap"
 
 # Combining nmap output
 echo "--------------------------------------------------"
 echo "Combining Nmap scans"
 echo "--------------------------------------------------"
-declare -i MIN=$POffset
-# touch $wrkpth/Reports/TLS.gnmap $wrkpth/Reports/TLS.nmap $wrkpth/Reports/TLS.html
 for i in $(seq 0 $MAX); do
-    xsltproc $wrkpth/Nmap/TLS-$i.xml -o $wrkpth/Nmap/TLS-$i.html &
-    cat $wrkpth/Nmap/TLS-$i.gnmap | tee -a $wrkpth/Reports/TLS.gnmap &
-    cat $wrkpth/Nmap/TLS-$i.nmap | tee -a $wrkpth/Reports/TLS.nmap &
-    echo >> $wrkpth/Reports/TLS.nmap &
-    cat $wrkpth/Nmap/TLS-$i.html | tee -a $wrkpth/Reports/TLS.html &
-    if (( $i == $MIN )); then 
-        let "MIN+=$POffset"
-        while pgrep -x nmap > /dev/null; do sleep 10; done
-        # wait
-    fi
+    xsltproc $wrkpth/Nmap/TLS-$i.xml -o $wrkpth/Nmap/TLS-$i.html
+    cat $wrkpth/Nmap/TLS-$i.gnmap | tee -a $wrkpth/Reports/TLS.gnmap
+    cat $wrkpth/Nmap/TLS-$i.nmap | tee -a $wrkpth/Reports/TLS.nmap
+    echo >> $wrkpth/Reports/TLS.nmap
 done
+echo "Done combining nmap output"
 
 # Generating livehost list
 echo "--------------------------------------------------"
 echo "Generating livehost list"
 echo "--------------------------------------------------"
-cat $wrkpth/Reports/TLS.nmap | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | sort | uniq > $wrkpth/livehosts
+cat $wrkpth/Reports/TLS.gnmap | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | sort | uniq > $wrkpth/livehosts
+echo "Done generating livehost list"
 
 # Grabbing all open ports
 echo "--------------------------------------------------"
 echo "Grabbing all open ports"
 echo "--------------------------------------------------"
-OpenPORT=($(cat $wrkpth/Reports/TLS.gnmap | grep Ports | cut -d " " -f 4 | cut -d "/" -f 1 | sort | uniq))
+OpenPORT=($(cat "$wrkpth/Reports/TLS.gnmap" | grep Ports | cut -d " " -f 4 | cut -d "/" -f 1 | sort | uniq))
+echo "Done grabbing all open ports"
 
 # Running all the other tools
 echo "--------------------------------------------------"
@@ -120,17 +113,19 @@ for IP in $(cat $wrkpth/livehosts); do
             echo "THis scan was performed by $(whoami)@$(hostname)" | tee -a $wrkpth/SSLScan/$IP:$PORTNUM-sslscan_output.txt $wrkpth/SSLyze/$IP:$PORTNUM-sslyze_output.txt
             echo "--------------------------------------------------" | tee -a $wrkpth/SSLScan/$IP:$PORTNUM-sslscan_output.txt $wrkpth/SSLyze/$IP:$PORTNUM-sslyze_output.txt
             sslscan --xml=$wrkpth/SSLScan/$IP:$PORTNUM-sslscan_output.xml $IP:$PORTNUM | tee -a $wrkpth/SSLScan/$IP:$PORTNUM-sslscan_output.txt
-            sslyze --xml_out=$wrkpth/SSLyze/$IP:$PORTNUM-sslyze_output.xml --regular $IP:$PORTNUM | tee -a $wrkpth/SSLyze/$IP:$PORTNUM-sslyze_output.txt | aha -t "SSLyze Output"  >> $wrkpth/SSLyze/$IP:$PORTNUM-sslyze_output.html
-            testssl -oa "$wrkpth/TestSSL/TLS" --append --fast --parallel --sneaky --ids-friendly $IP:$PORTNUM | tee -a $wrkpth/TestSSL/$IP:$PORTNUM-TestSSL_output.txt            
+            sslyze --xml_out=$wrkpth/SSLyze/$IP:$PORTNUM-sslyze_output.xml --regular $IP:$PORTNUM | tee -a $wrkpth/SSLyze/$IP:$PORTNUM-sslyze_output.txt
+            testssl --append --fast --parallel --sneaky $IP:$PORTNUM | tee -a $wrkpth/TestSSL/$IP:$PORTNUM-testssl_output.txt            
         fi
     done
 done
+echo "Done running TLS cross validation"
 
 # Combining sslscan & sslyze scans
 echo "--------------------------------------------------"
 echo "Combining SSLScan and SSLyze scans"
 echo "--------------------------------------------------"
 cat $wrkpth/SSLyze/*-sslyze_output.txt | aha -t "SSLyze Output"  >> $wrkpth/Reports/sslyze_output.html
-cat $wrkpth/SSLScan/*-sslscan_output.txt | aha -t "SSL Scan Output"  >> $wrkpth/Reports/sslyze_output.html
-echo "Done scanning"
+cat $wrkpth/SSLScan/*-sslscan_output.txt | aha -t "SSL Scan Output"  >> $wrkpth/Reports/sslscan_output.html
+cat $wrkpth/TestSSL/*-testssl_output.txt| aha -t "TestSSL Output"  >> $wrkpth/Reports/testssl_output.html
+echo "Done Combining sslscan & sslyze scans"
 echo
