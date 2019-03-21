@@ -87,7 +87,7 @@ echo "Done generating livehost list"
 echo "--------------------------------------------------"
 echo "Grabbing all open ports"
 echo "--------------------------------------------------"
-OpenPORT=($(cat "$wrkpth/Reports/TLS.gnmap" | grep Ports | cut -d " " -f 4 | cut -d "/" -f 1 | sort | uniq))
+OpenPORT=($(cat $wrkpth/Reports/TLS.nmap | grep tcp | grep ssl | cut -d "/" -f 1 | sort | uniq))
 echo "Done grabbing all open ports"
 
 # Running all the other tools
