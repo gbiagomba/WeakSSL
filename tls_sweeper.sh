@@ -33,7 +33,7 @@ TodaysYEAR=$(date +%Y)
 wrkpth="$pth/$TodaysYEAR/$TodaysDAY"
 
 # Setting Envrionment
-mkdir -p  $wrkpth/Nmap/ $wrkpth/SSLScan $wrkpth/Reports/ $wrkpth/SSLyze $wrkpth/TestSSL
+mkdir -p  $wrkpth/Nmap/ $wrkpth/SSLScan $wrkpth/Reports/ $wrkpth/SSLyze $wrkpth/TestSSL $wrkpth/OpenSSL/
 
 # Setting  parallel stack
 if [ $MAX -gt 1 ] || [ $MAX -lt 10 ]; then
@@ -114,7 +114,8 @@ for IP in $(cat $wrkpth/livehosts); do
             echo "--------------------------------------------------" | tee -a $wrkpth/SSLScan/$IP:$PORTNUM-sslscan_output.txt $wrkpth/SSLyze/$IP:$PORTNUM-sslyze_output.txt
             sslscan --xml=$wrkpth/SSLScan/$IP:$PORTNUM-sslscan_output.xml $IP:$PORTNUM | tee -a $wrkpth/SSLScan/$IP:$PORTNUM-sslscan_output.txt
             sslyze --xml_out=$wrkpth/SSLyze/$IP:$PORTNUM-sslyze_output.xml --regular $IP:$PORTNUM | tee -a $wrkpth/SSLyze/$IP:$PORTNUM-sslyze_output.txt
-            testssl --append --fast --parallel --sneaky $IP:$PORTNUM | tee -a $wrkpth/TestSSL/$IP:$PORTNUM-testssl_output.txt            
+            testssl --append --fast --parallel --sneaky $IP:$PORTNUM | tee -a $wrkpth/TestSSL/$IP:$PORTNUM-testssl_output.txt
+            openssl s_client -connect $IP:$PORTNUM | tee -a $wrkpth/OpenSSL/$IP:$PORTNUM-openssl_output.txt
         fi
     done
 done
@@ -126,6 +127,7 @@ echo "Combining SSLScan and SSLyze scans"
 echo "--------------------------------------------------"
 cat $wrkpth/SSLyze/*-sslyze_output.txt | aha -t "SSLyze Output"  >> $wrkpth/Reports/sslyze_output.html
 cat $wrkpth/SSLScan/*-sslscan_output.txt | aha -t "SSL Scan Output"  >> $wrkpth/Reports/sslscan_output.html
-cat $wrkpth/TestSSL/*-testssl_output.txt| aha -t "TestSSL Output"  >> $wrkpth/Reports/testssl_output.html
+cat $wrkpth/TestSSL/*-testssl_output.txt | aha -t "Test SSL Output"  >> $wrkpth/Reports/testssl_output.html
+cat $wrkpth/OpenSSL/*-openssl_output.txt | aha -t "Open SSL Output"  >> $wrkpth/Reports/openssl_output.html
 echo "Done Combining sslscan & sslyze scans"
 echo
