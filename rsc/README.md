@@ -1,22 +1,11 @@
-# Weak SSL Scanner & Sniper_SSL
-The script below scans servers for SSL misconfigurations (e.g., weak ciphers, weak encryption protocols, etc) using nmap, sslscan, sslyze, testssl and openssl. I use multiple tools because I want to cross reference and validate all findings without having to manually run additional tools.
+# rsc/ Resources
 
-## Requirements
-### Sniper_SSL
-you will need sniper installed https://github.com/1N3/Sn1per
+Reference assets related to TLS/SSL scanning. The Rust CLI does not require these at runtime; they are kept for compatibility, offline review, and documentation.
 
-### WeakSSL Scanner
-YOu will need nmap, sslscan, sslyze, and testssl installed
-- Run packagehundler install_flag sslyze sslscan testssl.sh
-- Debian: apt install sslyze sslscan testssl.sh
+- ssl-enum-ciphers.nse: Local copy of the Nmap NSE script that enumerates supported TLS ciphersuites. Useful for reference or offline customization; Nmap ships its own copy.
+- sslyze.xsl: Stylesheet for transforming SSLyze XML into HTML in legacy workflows. The Rust CLI generates simple HTML directly and does not use this.
+- OpenSSL_Ciphers.txt: Reference list of OpenSSL cipher names and aliases used by older scripts when probing weak ciphers.
 
-## Usage
-./WeakSSLx.x.xsh
-./Sniper_SSL.sh
-
-You will be prompted for the name of the target file, type it in and dont forget the extension (assuming there is one).
-YOu should also note that by default it will look in the current working directory (pwd).
-If the target file is elsewhere, you will need to manually enter the path to the file.
-Lastly, make sure you copy the "rsc" folder and the "WeakCiphers.txt" file
-
-Then seat back and let it do its thing.
+## Legacy Notes
+- Older shell scripts (see `../legacy/`) expected this `rsc/` folder to be present and referenced a file named `WeakCiphers.txt`. In this repository, that list is provided as `OpenSSL_Ciphers.txt`.
+- Those scripts are preserved for historical context; the Rust CLI is the primary entrypoint now.

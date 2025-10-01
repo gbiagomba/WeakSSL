@@ -63,6 +63,13 @@ Outputs are written to `./Reports` under the chosen workspace. If `aha` is not i
 ## Legacy
 The previous shell scripts are preserved in `legacy/` for reference but are no longer the primary entrypoint.
 
+## Folders
+- `rsc/`: Supporting resources and references used by scanners and reports.
+  - Includes a local copy of `ssl-enum-ciphers.nse` (for reference/offline use), `sslyze.xsl` (stylesheet for transforming sslyze XML), and `OpenSSL_Ciphers.txt` (cipher name references). The Rust CLI does not require these at runtime; they are kept for compatibility and documentation.
+- `scripts/`: Installation helpers for different platforms.
+  - `install.sh` installs on Linux/macOS by downloading the latest release if available, or building from source.
+  - `install.ps1` installs on Windows similarly, adding the binary to a standard location and PATH.
+
 ## Development
 - Format: `make fmt`
 - Test: `make test`

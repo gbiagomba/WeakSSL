@@ -5,7 +5,7 @@
 #xsltproc <nmap-output.xml> -o <nmap-output.html> 
 
 #Initializing all variables 
-declare -a PORT=(443 8443)
+declare -a PORT=(22 25 443 567 593 808 1433 3389 4443 4848 7103 7201 8443 8888)
 declare -a Ciphers=(DES-CBC-SHA DES-CBC3-SHA ECDH-ECDSA-DES-CBC3-SHA ECDH-ECDSA-RC4-SHA ECDH-RSA-DES-CBC3-SHA ECDH-RSA-RC4-SHA ECDHE-ECDSA-DES-CBC3-SHA ECDHE-ECDSA-RC4-SHA ECDHE-RSA-DES-CBC3-SHA ECDHE-RSA-RC4-SHA EDH-DSS-DES-CBC-SHA EDH-DSS-DES-CBC3-SHA EDH-RSA-DES-CBC-SHA EDH-RSA-DES-CBC3-SHA PSK-3DES-EDE-CBC-SHA PSK-AES128-CBC-SHA PSK-AES256-CBC-SHA PSK-RC4-SHA RC4-MD5 RC4-SHA SRP-3DES-EDE-CBC-SHA SRP-AES-128-CBC-SHA SRP-AES-256-CBC-SHA SRP-DSS-3DES-EDE-CBC-SHA SRP-DSS-AES-128-CBC-SHA SRP-DSS-AES-256-CBC-SHA SRP-RSA-3DES-EDE-CBC-SHA SRP-RSA-AES-128-CBC-SHA SRP-RSA-AES-256-CBC-SHA)
 STAT1="Up"
 STAT2="open"
@@ -20,19 +20,18 @@ read targets
 echo "--------------------------------------------------"
 echo "Creating the workspace"
 echo "--------------------------------------------------"
-mkdir -p SSLScan SSLyze Cipherscan Nmap
+mkdir -p Nmap SSLScan SSLyze Cipherscan
 mkdir -p TestSSL WeakSSL Reports SSH-Audit
 echo "Done creating workspace"
 
 #Nmap Scan
-# echo "--------------------------------------------------"
-# echo "Performing the SSL scan using Nmap"
-# echo "--------------------------------------------------"
-nmap -sS -sV --script=ssh2-enum-algos,ssl-enum-ciphers,rdp-enum-encryption,vulners -R -iL $pth/$targets -p 22,25,443,567,593,808,1433,3389,4443,4848,7103,7201,8443,8888 -oA Nmap/nmap_output
+echo "--------------------------------------------------"
+echo "Performing the SSL scan using Nmap"
+echo "--------------------------------------------------"
+nmap -sS -sV --script=ssh2-enum-algos,ssl-enum-ciphers,rdp-enum-encryption,vulners -R -iL $targets -p 22,25,443,567,593,808,1433,3389,4443,4848,7103,7201,8443,8888 -oA Nmap/nmap_output
 xsltproc Nmap/nmap_output.xml -o Reports/Nmap_SSL_Output.html
 cat $pth/Nmap/nmap_output.gnmap | grep Up | cut -d ' ' -f 2 > $pth/Nmap/live
-cat $pth/Nmap/live >> $targets
-cat $pth/Nmap/$targets | sort | uniq > $pth/livehosts
+cat $pth/Nmap/live | sort | uniq > $pth/livehosts
 echo "Done scanning with nmap"
 
 #SSL Scan
@@ -101,10 +100,8 @@ echo "Done scanning with testssl"
 echo "--------------------------------------------------"
 echo "Performing the SSL scan using cipherscan"
 echo "--------------------------------------------------"
-if ["cipherscan" != "$(ls | grep cipherscan)"];then
-    cd /tmp/
-    git clone https://github.com/mozilla/cipherscan
-fi
+cd /tmp/
+git clone https://github.com/mozilla/cipherscan
 cd cipherscan/
 for IP in $(cat $pth/livehosts); do
     for PORTNUM in ${PORT[*]};do
@@ -145,7 +142,7 @@ for IP in $(cat $pth/livehosts); do
     done
 done
 cd $pth
-echo "Done scanning with SSH Audit"
+echo "Done scanning with cipherscan"
 
 #OpenSSL - Manually checking weak ciphers (Needs to be fixed)
 echo "--------------------------------------------------"
@@ -204,6 +201,5 @@ unset PORT
 unset PORTNUM
 unset STAT1
 unset STAT2
-unset STAT3
 unset targets
 set -u
