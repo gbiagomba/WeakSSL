@@ -1,0 +1,18 @@
+[package]
+name = "weakssl"
+version = "4.0.0"
+edition = "2021"
+authors = ["Gilles Biagomba and contributors"]
+license = "MIT OR Apache-2.0"
+description = "WeakSSL: Orchestrate TLS/SSL scanners (nmap, sslscan, sslyze, testssl, cipherscan, ssh-audit) with a Rust CLI."
+repository = "https://github.com/gbiagomba/WeakSSL"
+readme = "README.md"
+
+[dependencies]
+# Intentionally no external crates to allow offline builds.
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "z"
+

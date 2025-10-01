@@ -67,6 +67,22 @@ docs/_build/
 # PyBuilder
 target/
 
+# Rust
+/target/
+Cargo.lock
+
+# Local workspaces
+/Reports/
+/Nmap/
+/SSLScan/
+/SSLyze/
+/Cipherscan/
+/TestSSL/
+/WeakSSL/
+/SSH-Audit/
+livehosts
+targets.txt
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
