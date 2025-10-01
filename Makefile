@@ -14,6 +14,9 @@ debug:
 run: build
 	$(BIN) $(ARGS)
 
+install:
+	bash scripts/install.sh
+
 test:
 	cargo test --all
 
@@ -22,4 +25,3 @@ fmt:
 
 clean:
 	cargo clean
-

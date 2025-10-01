@@ -10,11 +10,21 @@ The new CLI focuses on portability and zero external Rust dependencies, running 
 - Runs targeted subsets (`--nmap`, `--sslscan`, `--sslyze`, `--testssl`, `--cipherscan`, `--ssh-audit`, `--weak-openssl`) or `--all`.
 
 ## Install
-- Prerequisites: a Rust toolchain (1.70+). External scanner tools are optional but recommended (nmap, sslscan, sslyze, testssl, cipherscan, ssh-audit, openssl).
+- Prerequisites: a Rust toolchain (1.70+) if installing from source. External scanner tools are optional but recommended (nmap, sslscan, sslyze, testssl, cipherscan, ssh-audit, openssl).
 
-Build from source:
+Install via script (downloads release when available, falls back to source build):
+```
+# Linux / macOS
+curl -fsSL https://raw.githubusercontent.com/gbiagomba/WeakSSL/refs/heads/master/scripts/install.sh | bash
+
+# Windows (PowerShell as Admin)
+irm https://raw.githubusercontent.com/gbiagomba/WeakSSL/refs/heads/master/scripts/install.ps1 | iex
+```
+
+Build from source (local clone):
 ```
 make build
+sudo install -m 0755 target/release/weakssl /usr/local/bin/weakssl
 ```
 
 Run locally without installing:
@@ -57,6 +67,7 @@ The previous shell scripts are preserved in `legacy/` for reference but are no l
 - Format: `make fmt`
 - Test: `make test`
 - Build: `make build`
+- Install locally: `scripts/install.sh` (Linux/macOS) or `scripts/install.ps1` (Windows)
 
 ## License
 This project is dual-licensed under MIT or Apache-2.0.
