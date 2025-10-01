@@ -1,6 +1,6 @@
 [package]
 name = "weakssl"
-version = "4.0.0"
+version = "4.0.1"
 edition = "2021"
 authors = ["Gilles Biagomba and contributors"]
 license = "MIT OR Apache-2.0"
@@ -15,4 +15,3 @@ readme = "README.md"
 codegen-units = 1
 lto = true
 opt-level = "z"
-
