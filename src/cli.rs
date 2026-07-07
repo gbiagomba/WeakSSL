@@ -40,12 +40,12 @@ pub struct ScanArgs {
     /// Comma-separated port list (e.g. 443,8443,25)
     #[arg(short, long, value_delimiter = ',')]
     pub ports: Vec<u16>,
-    /// Output format: json|text|table|html|csv|sqlite  [default: json]
-    #[arg(long, default_value = "json")]
-    pub output: OutputFormat,
-    /// Write output to this file instead of stdout
-    #[arg(short, long)]
-    pub out: Option<String>,
+    /// Output format: json|text|table|html|csv|sqlite|all  [default: json]
+    #[arg(long = "output-format", default_value = "json")]
+    pub output_format: OutputFormat,
+    /// Write output to file instead of stdout; base path when --output-format all
+    #[arg(short = 'o', long = "output")]
+    pub output: Option<String>,
     /// Max parallel scans  [default: 32]
     #[arg(long, default_value = "32")]
     pub concurrency: usize,
@@ -173,4 +173,6 @@ pub enum OutputFormat {
     Html,
     Csv,
     Sqlite,
+    /// Write all non-sqlite formats to <output-base>.{json,txt,table,html,csv}
+    All,
 }

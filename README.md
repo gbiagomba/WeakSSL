@@ -4,7 +4,7 @@
   <img src="img/Pasted%20image%2020260313184423.png" alt="Handshaker Logo" width="600"/>
 </p>
 
-**Version:** v7.3.3 | **Author:** Gilles Biagomba | **License:** GPL-3.0
+**Version:** v7.6.0 | **Author:** Gilles Biagomba | **License:** GPL-3.0
 
 Handshaker is a native Rust secure-transport posture engine that probes TLS, SSH, and RDP endpoints without shelling out to external tools. It produces stable, machine-parseable finding IDs, SSL Labs–style grades, CVSS v3.1 risk scores, and supports compliance evaluation, benchmarking, longitudinal diffing, and AI-powered analysis.
 
@@ -35,7 +35,7 @@ Handshaker is a native Rust secure-transport posture engine that probes TLS, SSH
 - **CVSS v3.1 configuration risk scoring** — max and weighted aggregate scores across all findings
 - **Compliance evaluation** against YAML policies (PCI-DSS, NIST 800-52r2, CIS-like profiles)
 - **Benchmarking and diffing** across scan runs to track remediation progress and detect regressions
-- **Multiple output formats**: JSON, Text, Table, HTML, CSV, SQLite — with optional file output and database persistence
+- **Multiple output formats**: JSON, Text, Table, HTML, CSV, SQLite — all formats include the full finding data (ID, protocol, severity, CVSS vector + score, title, details); write all formats at once with `--output-format all --output <base>`
 - **Unified file import** with `handshaker scan --file` auto-detection for plain targets, nmap grep/XML, nuclei JSON(L), and testssl JSON
 - **Vendor-calibrated finding catalog** for all 68 findings, aligned against NVD, Tenable, RFC, and related standards references where applicable
 - **Documentation integrity tooling** to keep `FINDING_INDEX.MD` and `FINDING_AUDIT_MATRIX.md` synchronized with the Rust catalog
@@ -93,8 +93,8 @@ bash scripts/install.sh
 | `--file` | `-f` | string | — | File input: plain targets, nmap grep/XML, nuclei JSON(L), or testssl JSON |
 | `--stdin` | — | bool | false | Read targets from stdin (one per line) |
 | `--ports` | `-p` | list | — | Comma-separated port list (e.g. `443,8443,25`) |
-| `--output` | — | enum | `json` | Output format: `json\|text\|table\|html\|csv\|sqlite` |
-| `--out` | `-o` | string | — | Write output to file instead of stdout |
+| `--output-format` | — | enum | `json` | Output format: `json\|text\|table\|html\|csv\|sqlite\|all` |
+| `--output` | `-o` | string | — | Write output to file; base path when `--output-format all` |
 | `--concurrency` | — | number | `32` | Max parallel scans |
 | `--timeout-secs` | — | number | `10` | Per-target connection timeout in seconds |
 | `--policy` | — | string | — | YAML policy file for compliance evaluation |
@@ -174,10 +174,10 @@ handshaker scan --target example.com --ports 443
 handshaker scan --target mail.example.com --ports 25,587,465,993
 
 # Scan a list of hosts and write an HTML report
-handshaker scan --file hosts.txt --output html --out report.html
+handshaker scan --file hosts.txt --output-format html --output report.html
 
 # Import targets from nmap XML output
-handshaker scan --file scan.xml --output json --out results.json
+handshaker scan --file scan.xml --output-format json --output results.json
 
 # Import targets from nuclei JSONL output
 handshaker scan --file nuclei.jsonl
@@ -187,6 +187,9 @@ handshaker scan --file testssl.json
 
 # Read targets from stdin
 cat hosts.txt | handshaker scan --stdin
+
+# Write all formats at once (creates report.json, .txt, .table, .html, .csv)
+handshaker scan --file hosts.txt --output-format all --output report
 
 # Compliance check with CI gate
 handshaker scan --target example.com --policy pci.yaml --fail-on-noncompliant
@@ -342,7 +345,7 @@ docker build -t handshaker .
 docker run --rm handshaker scan --target example.com --ports 443
 
 # Scan a local file (mount current directory)
-docker run --rm -v "$(pwd)":/data handshaker scan --file /data/hosts.txt --output html --out /data/report.html
+docker run --rm -v "$(pwd)":/data handshaker scan --file /data/hosts.txt --output-format html --output /data/report.html
 ```
 
 ---

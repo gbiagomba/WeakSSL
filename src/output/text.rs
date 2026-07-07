@@ -8,8 +8,14 @@ pub fn write(results: &[ScanResult], out: Option<&mut dyn Write>) -> Result<()> 
         buf.push_str(&format!("Target: {}:{}\n", r.target.host, r.target.port));
         for f in &r.findings {
             buf.push_str(&format!(
-                "- {} [{}] {} ({})\n",
-                f.id, f.severity, f.title, f.details
+                "  - {} [{severity}] ({protocol:?}) CVSS {cvss_vector} {cvss_score:.1}  {title}\n    {details}\n",
+                f.id,
+                severity = f.severity,
+                protocol = f.protocol,
+                cvss_vector = f.cvss_vector,
+                cvss_score = f.cvss_score,
+                title = f.title,
+                details = f.details,
             ));
         }
     }

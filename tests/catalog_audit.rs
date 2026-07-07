@@ -135,35 +135,35 @@ fn critical_finding_count_is_2() {
 }
 
 #[test]
-fn high_finding_count_is_4() {
+fn high_finding_count_is_3() {
     assert_eq!(
         ALL_FINDINGS
             .iter()
             .filter(|f| format!("{}", f.severity) == "High")
             .count(),
-        4
+        3
     );
 }
 
 #[test]
-fn medium_finding_count_is_34() {
+fn medium_finding_count_is_32() {
     assert_eq!(
         ALL_FINDINGS
             .iter()
             .filter(|f| format!("{}", f.severity) == "Medium")
             .count(),
-        34
+        32
     );
 }
 
 #[test]
-fn low_finding_count_is_9() {
+fn low_finding_count_is_12() {
     assert_eq!(
         ALL_FINDINGS
             .iter()
             .filter(|f| format!("{}", f.severity) == "Low")
             .count(),
-        9
+        12
     );
 }
 

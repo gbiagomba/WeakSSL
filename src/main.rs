@@ -12,7 +12,7 @@ async fn main() -> Result<()> {
             let engine = handshaker::engine::Engine::new(args.concurrency, args.timeout_secs);
             let results = engine.scan_targets(&targets).await?;
 
-            let mut output = OutputWriter::new(args.output, args.out)?;
+            let mut output = OutputWriter::new(args.output_format, args.output)?;
             output.write_scan(&results)?;
 
             let mut compliance_result = None;

@@ -36,7 +36,7 @@ applicable compliance policy profiles.
 | HS-TLS-PROTOCOL-0006 | TLS 1.3 not supported | Info | 0.0 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:N` | TLS 1.3 removes legacy features and provides 0-RTT; its absence is a missed hardening opportunity |
 | HS-TLS-PROTOCOL-0007 | Insecure renegotiation allowed | Medium | 6.5 | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N` | Insecure renegotiation enables injection of plaintext by an active MITM (CVE-2009-3555) |
 | HS-TLS-PROTOCOL-0008 | Secure renegotiation not supported | Medium | 4.8 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | Without RFC 5746, clients fall back to insecure renegotiation |
-| HS-TLS-PROTOCOL-0009 | TLS compression enabled (CRIME) | Medium | 4.8 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | TLS-layer compression enables the CRIME attack to recover secrets from encrypted streams |
+| HS-TLS-PROTOCOL-0009 | TLS compression enabled (CRIME) | Low | 3.1 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:N/A:N` | TLS-layer compression enables the CRIME attack (CVE-2012-4929); requires MITM position and user interaction to recover secrets |
 | HS-TLS-PROTOCOL-0010 | HTTP/2 over weak TLS | Medium | 4.8 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | Offering HTTP/2 alongside deprecated TLS versions widens the downgrade attack surface |
 
 ### 1.2 Cipher (12) — `HS-TLS-CIPHER-0001..0012`
@@ -45,8 +45,8 @@ applicable compliance policy profiles.
 |----|-------|----------|:----------:|-------------|-------------|
 | HS-TLS-CIPHER-0001 | NULL cipher suite | Critical | 9.8 | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` | No encryption; all traffic transmitted in cleartext and trivially intercepted or modified |
 | HS-TLS-CIPHER-0002 | Anonymous (aNULL) cipher | Medium | 5.9 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N` | No server authentication; any attacker can impersonate the server without a certificate |
-| HS-TLS-CIPHER-0003 | EXPORT cipher suite | High | 7.4 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N` | 40/56-bit export-grade ciphers are trivially breakable with modern hardware (FREAK — CVE-2015-0204) |
-| HS-TLS-CIPHER-0004 | RC4 cipher suite | Medium | 5.9 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N` | RC4 has well-documented statistical biases that allow plaintext recovery in high-volume sessions |
+| HS-TLS-CIPHER-0003 | EXPORT cipher suite | Medium | 5.9 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N` | 40/56-bit export-grade ciphers allow key factoring and session decryption (FREAK — CVE-2015-0204); no active injection capability |
+| HS-TLS-CIPHER-0004 | RC4 cipher suite | Low | 3.7 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N` | RC4 statistical biases (CVE-2013-2566, CVE-2015-2808) allow only partial plaintext recovery after millions of sessions; CISA-ADP rates at Low |
 | HS-TLS-CIPHER-0005 | 3DES cipher (SWEET32) | High | 7.5 | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N` | 3DES uses 64-bit blocks; birthday attacks after ~32 GB of traffic can recover plaintext (CVE-2016-2183) |
 | HS-TLS-CIPHER-0006 | CBC-only with TLS 1.0 (BEAST) | Medium | 4.8 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | Predictable IV in TLS 1.0 CBC mode enables the BEAST attack against certain session data |
 | HS-TLS-CIPHER-0007 | Weak medium-strength ciphers | Medium | 4.8 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | Ciphers with 64–112 bit effective strength are susceptible to brute-force in targeted attacks |
@@ -121,7 +121,7 @@ applicable compliance policy profiles.
 | ID | Title | Severity | CVSS Score | CVSS Vector | Description |
 |----|-------|----------|:----------:|-------------|-------------|
 | HS-SSH-CIPHER-0106 | CBC ciphers enabled | Low | 3.7 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N` | SSH CBC mode is vulnerable to plaintext recovery via a padding oracle when combined with certain implementation flaws |
-| HS-SSH-CIPHER-0107 | arcfour/RC4 cipher enabled | Medium | 5.9 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N` | RC4 (arcfour) is cryptographically broken with known keystream biases; prohibited by RFC 8758 |
+| HS-SSH-CIPHER-0107 | arcfour/RC4 cipher enabled | Low | 3.7 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N` | RC4 (arcfour) statistical biases yield only partial plaintext recovery after very high traffic volumes; analogous to CVE-2015-2808 rated Low by CISA-ADP |
 
 ### 2.4 MAC (2) — `HS-SSH-MAC-0108..0109`
 
@@ -482,7 +482,7 @@ Standards references, CVSS vector explanations, severity reasoning, and attack p
 
 ### HS-TLS-PROTOCOL-0009 — TLS Compression Enabled (CRIME)
 
-**Severity:** Medium | **CVSS Score:** 4.8 | **Vector:** `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N`
+**Severity:** Low | **CVSS Score:** 3.1 | **Vector:** `CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:N/A:N`
 
 **CVE References:** CVE-2012-4929 (CRIME)
 **CWE:** CWE-311 (Missing Encryption of Sensitive Data)
@@ -570,7 +570,7 @@ Standards references, CVSS vector explanations, severity reasoning, and attack p
 
 ### HS-TLS-CIPHER-0003 — EXPORT Cipher Suite
 
-**Severity:** High | **CVSS Score:** 7.4 | **Vector:** `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N`
+**Severity:** Medium | **CVSS Score:** 5.9 | **Vector:** `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N`
 
 **CVE References:** CVE-2015-0204 (FREAK), CVE-2015-1637 (FREAK on Windows)
 **CWE:** CWE-326 (Inadequate Encryption Strength)
@@ -593,7 +593,7 @@ Standards references, CVSS vector explanations, severity reasoning, and attack p
 
 ### HS-TLS-CIPHER-0004 — RC4 Cipher Suite
 
-**Severity:** Medium | **CVSS Score:** 5.9 | **Vector:** `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N`
+**Severity:** Low | **CVSS Score:** 3.7 | **Vector:** `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N`
 
 **CVE References:** CVE-2013-2566, CVE-2015-2808 (Bar Mitzvah)
 **CWE:** CWE-327 (Use of a Broken or Risky Cryptographic Algorithm)
@@ -1347,9 +1347,9 @@ Standards references, CVSS vector explanations, severity reasoning, and attack p
 
 ### HS-SSH-CIPHER-0107 — arcfour/RC4 Cipher
 
-**Severity:** Medium | **CVSS Score:** 5.9 | **Vector:** `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N`
+**Severity:** Low | **CVSS Score:** 3.7 | **Vector:** `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N`
 
-**CVE References:** CVE-2013-2566, RFC 8758 (prohibits arcfour in SSH)
+**CVE References:** CVE-2013-2566, CVE-2015-2808 (Bar Mitzvah — analogous), RFC 8758 (prohibits arcfour in SSH)
 **CWE:** CWE-327 (Use of a Broken or Risky Cryptographic Algorithm)
 **OWASP:** A02:2021 – Cryptographic Failures
 

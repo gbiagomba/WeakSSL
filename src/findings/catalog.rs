@@ -8,10 +8,10 @@ pub const HS_TLS_PROTOCOL_0001: FindingMeta = FindingMeta {
     title: "SSLv2 supported",
     protocol: Protocol::Tls,
     severity: Severity::Critical,
-    description: "The service negotiates SSLv2, an obsolete protocol with severe cryptographic weaknesses.",
-    impact: "An on-path attacker can exploit legacy protocol weaknesses to break confidentiality and integrity, enabling interception or manipulation of traffic.",
+    description: "The service negotiates SSLv2, an obsolete protocol with severe cryptographic weaknesses including the DROWN attack (CVE-2016-0800).",
+    impact: "An on-path attacker can exploit SSLv2 to break confidentiality and integrity of both SSLv2 and co-hosted TLS sessions (DROWN), enabling interception or manipulation of traffic.",
     remediation: "Disable SSLv2 at the server and any upstream TLS termination points. Ensure clients cannot negotiate SSLv2.",
-    references: &[],
+    references: &["https://nvd.nist.gov/vuln/detail/CVE-2016-0800"],
     cvss_vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
 };
 
@@ -20,10 +20,10 @@ pub const HS_TLS_PROTOCOL_0002: FindingMeta = FindingMeta {
     title: "SSLv3 supported",
     protocol: Protocol::Tls,
     severity: Severity::High,
-    description: "The service negotiates SSLv3, an obsolete protocol with well-known weaknesses.",
-    impact: "Legacy downgrade paths can enable man-in-the-middle attacks and weaken or break confidentiality.",
+    description: "The service negotiates SSLv3, an obsolete protocol vulnerable to the POODLE attack (CVE-2014-3566) and other weaknesses.",
+    impact: "Legacy downgrade paths can enable man-in-the-middle attacks; POODLE allows plaintext recovery of session cookies in browser-based contexts. Enabling SSLv3 is categorically prohibited by PCI-DSS and NIST SP 800-52r2.",
     remediation: "Disable SSLv3. Permit only TLS 1.2+ (and preferably TLS 1.3).",
-    references: &[],
+    references: &["https://nvd.nist.gov/vuln/detail/CVE-2014-3566"],
     cvss_vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:L",
 };
 
@@ -103,12 +103,12 @@ pub const HS_TLS_PROTOCOL_0009: FindingMeta = FindingMeta {
     id: "HS-TLS-PROTOCOL-0009",
     title: "TLS compression enabled (CRIME risk indicator)",
     protocol: Protocol::Tls,
-    severity: Severity::Medium,
-    description: "The server allows TLS-level compression.",
-    impact: "TLS compression enables CRIME-style attacks in certain contexts.",
-    remediation: "Disable TLS compression.",
-    references: &[],
-    cvss_vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
+    severity: Severity::Low,
+    description: "The server allows TLS-level compression (CVE-2012-4929). CRIME exploits compression oracles to recover secret session tokens when an attacker has MITM position and can observe ciphertext length.",
+    impact: "An MITM attacker observing victim-controlled requests (e.g., browser traffic) can recover session cookies via compression oracle; requires both network position and user interaction.",
+    remediation: "Disable TLS compression (set SSL_OP_NO_COMPRESSION in OpenSSL or equivalent). Modern TLS stacks disable this by default.",
+    references: &["https://nvd.nist.gov/vuln/detail/CVE-2012-4929"],
+    cvss_vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:N/A:N",
 };
 
 pub const HS_TLS_PROTOCOL_0010: FindingMeta = FindingMeta {
@@ -152,24 +152,31 @@ pub const HS_TLS_CIPHER_0003: FindingMeta = FindingMeta {
     id: "HS-TLS-CIPHER-0003",
     title: "EXPORT cipher suite supported",
     protocol: Protocol::Tls,
-    severity: Severity::High,
-    description: "The service supports export-grade cipher suites.",
-    impact: "Export-grade ciphers are trivially breakable.",
-    remediation: "Disable export cipher suites.",
-    references: &[],
-    cvss_vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+    severity: Severity::Medium,
+    description: "The service supports export-grade cipher suites (40–56-bit). These are exploitable via FREAK (CVE-2015-0204) and Logjam-class attacks that factor the weak keys.",
+    impact: "An MITM attacker can downgrade the connection to an export cipher and factor the weak key offline, recovering session keys and decrypting confidential traffic. Active injection is not directly enabled.",
+    remediation: "Disable all EXPORT cipher suites from the server configuration.",
+    references: &[
+        "https://nvd.nist.gov/vuln/detail/CVE-2015-0204",
+        "https://www.tenable.com/plugins/nessus/82575",
+    ],
+    cvss_vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
 };
 
 pub const HS_TLS_CIPHER_0004: FindingMeta = FindingMeta {
     id: "HS-TLS-CIPHER-0004",
     title: "RC4 cipher suite supported",
     protocol: Protocol::Tls,
-    severity: Severity::Medium,
-    description: "The service supports RC4 cipher suites.",
-    impact: "RC4 has known biases that enable plaintext recovery in some contexts.",
-    remediation: "Disable RC4 cipher suites.",
-    references: &["https://www.tenable.com/plugins/nessus/73683"],
-    cvss_vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+    severity: Severity::Low,
+    description: "The service supports RC4 cipher suites. RC4 has statistical biases (CVE-2013-2566, CVE-2015-2808/Bar Mitzvah) that allow partial plaintext recovery after very large volumes of ciphertext.",
+    impact: "Statistical attacks against RC4 require millions of encrypted sessions and yield only partial plaintext recovery (e.g., session cookie bytes); full session decryption is not practical. CISA-ADP rates CVE-2015-2808 at 3.7 Low.",
+    remediation: "Disable all RC4 cipher suites from the server configuration.",
+    references: &[
+        "https://nvd.nist.gov/vuln/detail/CVE-2013-2566",
+        "https://nvd.nist.gov/vuln/detail/CVE-2015-2808",
+        "https://www.tenable.com/plugins/nessus/73683",
+    ],
+    cvss_vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
 };
 
 pub const HS_TLS_CIPHER_0005: FindingMeta = FindingMeta {
@@ -658,12 +665,15 @@ pub const HS_SSH_CIPHER_0107: FindingMeta = FindingMeta {
     id: "HS-SSH-CIPHER-0107",
     title: "arcfour/RC4 enabled",
     protocol: Protocol::Ssh,
-    severity: Severity::Medium,
-    description: "The server supports RC4/arcfour ciphers.",
-    impact: "RC4 is deprecated and insecure.",
-    remediation: "Disable RC4.",
-    references: &[],
-    cvss_vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+    severity: Severity::Low,
+    description: "The server supports RC4/arcfour cipher suites in SSH. RC4 has statistical biases (analogous to CVE-2015-2808) that allow partial plaintext recovery after large volumes of ciphertext.",
+    impact: "Statistical attacks require very high traffic volumes and yield partial plaintext recovery only; practical exploitation is limited. Aligned with CISA-ADP assessment of RC4 attacks at Low severity.",
+    remediation: "Remove arcfour, arcfour128, and arcfour256 from the SSH server cipher list.",
+    references: &[
+        "https://nvd.nist.gov/vuln/detail/CVE-2015-2808",
+        "https://www.rfc-editor.org/rfc/rfc8758",
+    ],
+    cvss_vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
 };
 
 pub const HS_SSH_MAC_0108: FindingMeta = FindingMeta {

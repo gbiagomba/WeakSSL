@@ -17,7 +17,7 @@ Primary source of truth: `src/findings/catalog.rs`
 | HS-RDP-TLS-0203 | Rdp | Medium | RDP accepts TLS 1.1 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-RDP-TLS-0204 | Rdp | Medium | RDP certificate invalid/expired | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N` | https://www.tenable.com/plugins/nessus/15901; https://www.tenable.com/plugins/nessus/51192 |
 | HS-SSH-CIPHER-0106 | Ssh | Low | CBC ciphers enabled | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N` | https://www.tenable.com/plugins/nessus/70658; https://www.tenable.com/plugins/nessus/44065 |
-| HS-SSH-CIPHER-0107 | Ssh | Medium | arcfour/RC4 enabled | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
+| HS-SSH-CIPHER-0107 | Ssh | Low | arcfour/RC4 enabled | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N` | https://nvd.nist.gov/vuln/detail/CVE-2015-2808; https://www.rfc-editor.org/rfc/rfc8758 |
 | HS-SSH-CONFIG-0110 | Ssh | Info | SSH banner exposes legacy server version | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-SSH-HOSTKEY-0104 | Ssh | Low | ssh-rsa (SHA1) hostkey enabled | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N` | https://www.rfc-editor.org/rfc/rfc9142 |
 | HS-SSH-HOSTKEY-0105 | Ssh | Low | RSA hostkey < 2048 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N` | https://www.tenable.com/plugins/nessus/153954; https://csrc.nist.gov/pubs/sp/800/131/a/r2/final |
@@ -41,8 +41,8 @@ Primary source of truth: `src/findings/catalog.rs`
 | HS-TLS-CERT-0013 | Tls | Info | RSA key size below 3072 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-TLS-CIPHER-0001 | Tls | Critical | NULL cipher suite supported | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-TLS-CIPHER-0002 | Tls | Medium | Anonymous (aNULL) cipher suite supported | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N` | https://www.tenable.com/plugins/nessus/31705 |
-| HS-TLS-CIPHER-0003 | Tls | High | EXPORT cipher suite supported | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
-| HS-TLS-CIPHER-0004 | Tls | Medium | RC4 cipher suite supported | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N` | https://www.tenable.com/plugins/nessus/73683 |
+| HS-TLS-CIPHER-0003 | Tls | Medium | EXPORT cipher suite supported | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N` | https://nvd.nist.gov/vuln/detail/CVE-2015-0204; https://www.tenable.com/plugins/nessus/82575 |
+| HS-TLS-CIPHER-0004 | Tls | Low | RC4 cipher suite supported | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N` | https://nvd.nist.gov/vuln/detail/CVE-2013-2566; https://nvd.nist.gov/vuln/detail/CVE-2015-2808; https://www.tenable.com/plugins/nessus/73683 |
 | HS-TLS-CIPHER-0005 | Tls | High | 3DES cipher suite supported (SWEET32 exposure indicator) | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N` | https://www.tenable.com/plugins/nessus/111649 |
 | HS-TLS-CIPHER-0006 | Tls | Medium | CBC-only suites with TLS 1.0 enabled (BEAST exposure indicator) | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-TLS-CIPHER-0007 | Tls | Medium | Weak medium strength cipher policy (64–112-bit) | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | https://www.tenable.com/plugins/nessus/42873 |
@@ -53,15 +53,15 @@ Primary source of truth: `src/findings/catalog.rs`
 | HS-TLS-CIPHER-0012 | Tls | Info | No ChaCha20-Poly1305 suites available | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-TLS-EXTENSION-0011 | Tls | Info | ALPN hardening missing for HTTP/2 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-TLS-EXTENSION-0012 | Tls | Info | ALPN not advertised | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
-| HS-TLS-PROTOCOL-0001 | Tls | Critical | SSLv2 supported | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
-| HS-TLS-PROTOCOL-0002 | Tls | High | SSLv3 supported | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:L` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
+| HS-TLS-PROTOCOL-0001 | Tls | Critical | SSLv2 supported | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` | https://nvd.nist.gov/vuln/detail/CVE-2016-0800 |
+| HS-TLS-PROTOCOL-0002 | Tls | High | SSLv3 supported | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:L` | https://nvd.nist.gov/vuln/detail/CVE-2014-3566 |
 | HS-TLS-PROTOCOL-0003 | Tls | Medium | TLS 1.0 enabled | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N` | https://www.tenable.com/plugins/nessus/104743; https://www.tenable.com/plugins/nessus/84470; https://www.rfc-editor.org/rfc/rfc8996 |
 | HS-TLS-PROTOCOL-0004 | Tls | Medium | TLS 1.1 enabled | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N` | https://www.tenable.com/plugins/nessus/157288; https://www.rfc-editor.org/rfc/rfc8996 |
 | HS-TLS-PROTOCOL-0005 | Tls | High | TLS 1.2 not supported | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-TLS-PROTOCOL-0006 | Tls | Info | TLS 1.3 not supported | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-TLS-PROTOCOL-0007 | Tls | Medium | Insecure renegotiation allowed | `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-TLS-PROTOCOL-0008 | Tls | Medium | Secure renegotiation not supported | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
-| HS-TLS-PROTOCOL-0009 | Tls | Medium | TLS compression enabled (CRIME risk indicator) | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
+| HS-TLS-PROTOCOL-0009 | Tls | Low | TLS compression enabled (CRIME risk indicator) | `CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:N/A:N` | https://nvd.nist.gov/vuln/detail/CVE-2012-4929 |
 | HS-TLS-PROTOCOL-0010 | Tls | Medium | HTTP/2 offered over weak TLS settings | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-TLS-SCENARIO-0001 | Tls | Medium | No TLS_FALLBACK_SCSV support (downgrade resilience indicator) | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |
 | HS-TLS-SCENARIO-0002 | Tls | Medium | Accepts forced downgrade to TLS 1.0 | `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N` | Internal calibration from standards/best-practice guidance documented in FINDING_INDEX.MD |

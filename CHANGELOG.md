@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.6.0] - 2026-07-07
+
+### Changed
+- `--output` (format selector) renamed to `--output-format` — breaking flag rename
+- `--out` renamed to `--output` (short: `-o`) — breaking flag rename
+- **CSV**: added `protocol`, `cvss_vector`, `cvss_score` columns (now 8 columns total)
+- **HTML**: replaced bullet list with a full table; added severity, protocol, CVSS vector and score columns; severity cells styled with CSS classes
+- **Text**: added protocol and CVSS vector + score to each finding line
+- **Table**: added Protocol, CVSS, and Details columns so all formats are data-equivalent
+
+### Added
+- `--output-format all`: writes results simultaneously to `<base>.json`, `<base>.txt`, `<base>.table`, `<base>.html`, and `<base>.csv`; requires `--output <base-path>`
+
+### Fixed
+- README version badge corrected (was v7.3.3, now v7.6.0)
+- All non-JSON output formats now include the full `FindingInstance` field set (protocol, cvss_vector, cvss_score) that was previously only visible in JSON output
+- **CVSS corrections** (cross-referenced against NVD, Tenable plugins, CISA-ADP, Rapid7):
+  - `HS-TLS-PROTOCOL-0009` (CRIME/TLS compression): Medium 4.8 → **Low 3.1** (`UI:N/C:L/I:L` → `UI:R/C:L/I:N`); CVE-2012-4929 has no CVSS 3.x; CVSS 2.0 = 2.6 Low; requires UI:R
+  - `HS-TLS-CIPHER-0003` (EXPORT/FREAK): High 7.4 → **Medium 5.9** (`I:H` → `I:N`); FREAK enables decryption (C:H) not injection; CVE-2015-0204 has no NVD CVSS 3.x
+  - `HS-TLS-CIPHER-0004` (RC4/TLS): Medium 5.9 → **Low 3.7** (`C:H` → `C:L`); CVE-2015-2808 rated 3.7 Low by CISA-ADP; statistical attacks yield only partial plaintext
+  - `HS-SSH-CIPHER-0107` (arcfour/RC4): Medium 5.9 → **Low 3.7** (`C:H` → `C:L`); analogous to CVE-2015-2808; RC4 bias attacks require millions of sessions
+- Added CVE references to `HS-TLS-PROTOCOL-0001` (CVE-2016-0800/DROWN), `HS-TLS-PROTOCOL-0002` (CVE-2014-3566/POODLE), `HS-TLS-CIPHER-0003` (CVE-2015-0204), `HS-TLS-CIPHER-0004` (CVE-2013-2566, CVE-2015-2808), `HS-SSH-CIPHER-0107` (CVE-2015-2808, RFC 8758)
+- `FINDING_INDEX.MD` and `FINDING_AUDIT_MATRIX.md` updated to match corrected CVSS values
+
 ## [7.5.0] - 2026-03-17
 
 ### Fixed

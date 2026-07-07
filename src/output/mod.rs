@@ -14,19 +14,44 @@ use std::io::{self, Write};
 pub struct OutputWriter {
     format: OutputFormat,
     out: Option<File>,
+    out_base: Option<String>,
 }
 
 impl OutputWriter {
     pub fn new(format: OutputFormat, out_path: Option<String>) -> Result<Self> {
-        let out = if let Some(p) = out_path {
+        if matches!(format, OutputFormat::All) {
+            if out_path.is_none() {
+                return Err(HandshakerError::Config(
+                    "--output-format all requires --output <base-path> to name output files".into(),
+                ));
+            }
+            return Ok(Self { format, out: None, out_base: out_path });
+        }
+        let out = if let Some(ref p) = out_path {
             Some(File::create(p)?)
         } else {
             None
         };
-        Ok(Self { format, out })
+        Ok(Self { format, out, out_base: None })
     }
 
     pub fn write_scan(&mut self, results: &[ScanResult]) -> Result<()> {
+        if matches!(self.format, OutputFormat::All) {
+            let base = self.out_base.as_ref().unwrap();
+            let formats: &[(&str, fn(&[ScanResult], Option<&mut dyn Write>) -> Result<()>)] = &[
+                ("json", json::write),
+                ("txt",  text::write),
+                ("table", table::write),
+                ("html", html::write),
+                ("csv",  csv::write),
+            ];
+            for (ext, writer_fn) in formats {
+                let path = format!("{base}.{ext}");
+                let mut f = File::create(&path)?;
+                writer_fn(results, Some(&mut f as &mut dyn Write))?;
+            }
+            return Ok(());
+        }
         let out = self.out.as_mut().map(|f| f as &mut dyn Write);
         match self.format {
             OutputFormat::Json => json::write(results, out),
@@ -37,6 +62,7 @@ impl OutputWriter {
             OutputFormat::Sqlite => {
                 Err(HandshakerError::Config("Use --db for sqlite output".into()))
             }
+            OutputFormat::All => unreachable!(),
         }
     }
 
@@ -189,8 +215,8 @@ pub fn write_manual(cmd: Option<&str>) -> Result<()> {
             writeln!(out, "  -f, --file <PATH>          File input: plain targets, nmap grep/XML, nuclei JSON(L), or testssl JSON")?;
             writeln!(out, "      --stdin                Read targets from stdin (one per line)")?;
             writeln!(out, "  -p, --ports <LIST>         Comma-separated ports (e.g. 443,8443,25)")?;
-            writeln!(out, "      --output <FMT>         json|text|table|html|csv|sqlite  [default: json]")?;
-            writeln!(out, "  -o, --out <PATH>           Write output to file instead of stdout")?;
+            writeln!(out, "      --output-format <FMT>  json|text|table|html|csv|sqlite|all  [default: json]")?;
+            writeln!(out, "  -o, --output <PATH>        Write output to file; base path when --output-format all")?;
             writeln!(out, "      --concurrency <N>      Max parallel scans  [default: 32]")?;
             writeln!(out, "      --timeout-secs <N>     Per-target timeout in seconds  [default: 10]")?;
             writeln!(out, "      --policy <PATH>        YAML policy file for compliance evaluation")?;
@@ -203,7 +229,7 @@ pub fn write_manual(cmd: Option<&str>) -> Result<()> {
             writeln!(out, "  handshaker scan --target example.com --ports 443")?;
             writeln!(out)?;
             writeln!(out, "  # Scan a list of hosts and write HTML report")?;
-            writeln!(out, "  handshaker scan --file hosts.txt --output html --out report.html")?;
+            writeln!(out, "  handshaker scan --file hosts.txt --output-format html --output report.html")?;
             writeln!(out)?;
             writeln!(out, "  # Import targets from nmap XML and save to SQLite")?;
             writeln!(out, "  handshaker scan --file scan.xml --db results.db")?;
@@ -213,6 +239,9 @@ pub fn write_manual(cmd: Option<&str>) -> Result<()> {
             writeln!(out)?;
             writeln!(out, "  # STARTTLS probe on SMTP port")?;
             writeln!(out, "  handshaker scan --target mail.example.com --ports 25,587")?;
+            writeln!(out)?;
+            writeln!(out, "  # Write all formats at once (creates report.json, .txt, .table, .html, .csv)")?;
+            writeln!(out, "  handshaker scan --file hosts.txt --output-format all --output report")?;
             writeln!(out)?;
             writeln!(out, "  # Scan with compliance check; fail CI on violation")?;
             writeln!(out, "  handshaker scan --target example.com --policy pci.yaml --fail-on-noncompliant")?;
