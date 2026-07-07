@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.7.1] - 2026-07-07
+
+### Fixed
+- **HTML**: added `FQDN/IP` and `Port` as explicit table columns per row (previously embedded only in `<h2>` target grouping header); table now uses a single flat layout matching CSV column order (`ID, FQDN/IP, Port, Protocol, Severity, CVSS Score, CVSS Vector, Finding, CVE, CWE`); targets with no findings emit a single spanned row instead of a separate sub-table
+- **Table**: added `CVSS Vector` column (`CVSS` was score-only); columns now identical to CSV schema
+- **Text**: replaced grouped narrative format with a structured per-finding record block showing all 10 fields explicitly (`ID`, `FQDN/IP`, `Port`, `Protocol`, `Severity`, `CVSS Score`, `CVSS Vector`, `Finding`, `CVE`, `CWE`)
+
+All four output formats (CSV, HTML, Table, Text) now expose identical field coverage in the same column order.
+
 ## [7.7.0] - 2026-07-07
 
 ### Changed

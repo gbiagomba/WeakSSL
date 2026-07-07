@@ -6,26 +6,36 @@ use std::io::Write;
 pub fn write(results: &[ScanResult], out: Option<&mut dyn Write>) -> Result<()> {
     let mut buf = String::new();
     for r in results {
-        buf.push_str(&format!("Target: {}:{}\n", r.target.host, r.target.port));
         for f in &r.findings {
+            let finding = if f.details.is_empty() {
+                f.title.clone()
+            } else {
+                format!("{}: {}", f.title, f.details)
+            };
             let cve = cves_for_finding(&f.id);
             let cwe = cwe_for_finding(&f.id);
-            let refs = match (cve.is_empty(), cwe.is_empty()) {
-                (false, false) => format!("  CVE: {}  CWE: {}\n", cve, cwe),
-                (false, true) => format!("  CVE: {}\n", cve),
-                (true, false) => format!("  CWE: {}\n", cwe),
-                (true, true) => String::new(),
-            };
             buf.push_str(&format!(
-                "  - {} [{}] ({}) CVSS {} {:.1}  {}\n    {}\n{}",
+                "[FINDING]\n\
+                  ID:          {}\n\
+                  FQDN/IP:     {}\n\
+                  Port:        {}\n\
+                  Protocol:    {}\n\
+                  Severity:    {}\n\
+                  CVSS Score:  {:.1}\n\
+                  CVSS Vector: {}\n\
+                  Finding:     {}\n\
+                  CVE:         {}\n\
+                  CWE:         {}\n\n",
                 f.id,
-                format!("{}", f.severity).to_uppercase(),
+                r.target.host,
+                r.target.port,
                 format!("{:?}", f.protocol).to_uppercase(),
-                f.cvss_vector,
+                format!("{}", f.severity).to_uppercase(),
                 f.cvss_score,
-                f.title,
-                f.details,
-                refs,
+                f.cvss_vector,
+                finding,
+                cve,
+                cwe,
             ));
         }
     }
