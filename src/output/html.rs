@@ -1,5 +1,6 @@
 use crate::errors::Result;
 use crate::models::ScanResult;
+use crate::output::csv::{cves_for_finding, cwe_for_finding};
 use html_escape::encode_text;
 use std::io::Write;
 
@@ -37,8 +38,8 @@ pub fn write(results: &[ScanResult], out: Option<&mut dyn Write>) -> Result<()> 
         html.push_str(
             "<table>\
             <thead><tr>\
-            <th>Finding ID</th><th>Protocol</th><th>Severity</th>\
-            <th>CVSS Score</th><th>CVSS Vector</th><th>Title</th><th>Details</th>\
+            <th>ID</th><th>Protocol</th><th>Severity</th>\
+            <th>CVSS Score</th><th>CVSS Vector</th><th>Finding</th><th>CVE</th><th>CWE</th>\
             </tr></thead><tbody>",
         );
 
@@ -50,23 +51,32 @@ pub fn write(results: &[ScanResult], out: Option<&mut dyn Write>) -> Result<()> 
                 crate::models::Severity::Low => "severity-low",
                 crate::models::Severity::Info => "severity-info",
             };
+            let finding = if f.details.is_empty() {
+                f.title.clone()
+            } else {
+                format!("{}: {}", f.title, f.details)
+            };
+            let cve = cves_for_finding(&f.id);
+            let cwe = cwe_for_finding(&f.id);
             html.push_str(&format!(
                 "<tr>\
                 <td>{}</td>\
-                <td>{:?}</td>\
+                <td>{}</td>\
                 <td class=\"{sev_class}\">{}</td>\
                 <td>{:.1}</td>\
                 <td>{}</td>\
                 <td>{}</td>\
                 <td>{}</td>\
+                <td>{}</td>\
                 </tr>",
                 encode_text(f.id.as_str()),
-                f.protocol,
-                encode_text(&format!("{}", f.severity)),
+                encode_text(&format!("{:?}", f.protocol).to_uppercase()),
+                encode_text(&format!("{}", f.severity).to_uppercase()),
                 f.cvss_score,
                 encode_text(f.cvss_vector.as_str()),
-                encode_text(f.title.as_str()),
-                encode_text(f.details.as_str()),
+                encode_text(&finding),
+                encode_text(&cve),
+                encode_text(cwe),
             ));
         }
         html.push_str("</tbody></table>");

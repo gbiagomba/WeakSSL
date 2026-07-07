@@ -4,7 +4,7 @@
   <img src="img/Pasted%20image%2020260313184423.png" alt="Handshaker Logo" width="600"/>
 </p>
 
-**Version:** v7.6.0 | **Author:** Gilles Biagomba | **License:** GPL-3.0
+**Version:** v7.7.0 | **Author:** Gilles Biagomba | **License:** GPL-3.0
 
 Handshaker is a native Rust secure-transport posture engine that probes TLS, SSH, and RDP endpoints without shelling out to external tools. It produces stable, machine-parseable finding IDs, SSL Labs–style grades, CVSS v3.1 risk scores, and supports compliance evaluation, benchmarking, longitudinal diffing, and AI-powered analysis.
 
@@ -35,7 +35,7 @@ Handshaker is a native Rust secure-transport posture engine that probes TLS, SSH
 - **CVSS v3.1 configuration risk scoring** — max and weighted aggregate scores across all findings
 - **Compliance evaluation** against YAML policies (PCI-DSS, NIST 800-52r2, CIS-like profiles)
 - **Benchmarking and diffing** across scan runs to track remediation progress and detect regressions
-- **Multiple output formats**: JSON, Text, Table, HTML, CSV, SQLite — all formats include the full finding data (ID, protocol, severity, CVSS vector + score, title, details); write all formats at once with `--output-format all --output <base>`
+- **Multiple output formats**: JSON, Text, Table, HTML, CSV, SQLite — all formats include the full finding data; CSV and HTML use a testssl-inspired column layout (`id, fqdn/ip, port, protocol, severity, cvss_score, cvss_vector, finding, cve, cwe`); write all formats at once with `--output-format all --output <base>`
 - **Unified file import** with `handshaker scan --file` auto-detection for plain targets, nmap grep/XML, nuclei JSON(L), and testssl JSON
 - **Vendor-calibrated finding catalog** for all 68 findings, aligned against NVD, Tenable, RFC, and related standards references where applicable
 - **Documentation integrity tooling** to keep `FINDING_INDEX.MD` and `FINDING_AUDIT_MATRIX.md` synchronized with the Rust catalog

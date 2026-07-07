@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.7.0] - 2026-07-07
+
+### Changed
+- **CSV**: restructured to testssl-inspired column layout — `id, fqdn/ip, port, protocol, severity, cvss_score, cvss_vector, finding, cve, cwe` (was `target, finding_id, protocol, severity, cvss_vector, cvss_score, title, details`); `fqdn/ip` and `port` are now separate columns; `finding` combines title and runtime details; severity and protocol are uppercase (`HIGH`, `TLS`, etc.)
+- **HTML**: updated table columns to match new layout — columns are now `ID, Protocol, Severity, CVSS Score, CVSS Vector, Finding, CVE, CWE`; severity and protocol displayed in uppercase
+- **Table**: split host/port into separate `FQDN/IP` and `Port` columns; added `CVE` and `CWE` columns; `Finding` column combines title and details; severity/protocol uppercase
+- **Text**: severity and protocol now uppercase; CVE/CWE appended to each finding block when present
+
+### Added
+- CVE extraction from catalog reference URLs at write time — CVE IDs (e.g. `CVE-2016-0800`) are extracted from `https://nvd.nist.gov/vuln/detail/CVE-*` and similar references stored in the finding catalog
+- CWE mapping computed per finding ID: `CWE-311` (NULL cipher), `CWE-295` (aNULL/self-signed), `CWE-297` (hostname mismatch), `CWE-298` (certificate validity), `CWE-287` (no NLA), `CWE-326` (all other cryptographic configuration findings)
+
 ## [7.6.0] - 2026-07-07
 
 ### Changed

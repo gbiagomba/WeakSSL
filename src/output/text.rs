@@ -1,5 +1,6 @@
 use crate::errors::Result;
 use crate::models::ScanResult;
+use crate::output::csv::{cves_for_finding, cwe_for_finding};
 use std::io::Write;
 
 pub fn write(results: &[ScanResult], out: Option<&mut dyn Write>) -> Result<()> {
@@ -7,15 +8,24 @@ pub fn write(results: &[ScanResult], out: Option<&mut dyn Write>) -> Result<()> 
     for r in results {
         buf.push_str(&format!("Target: {}:{}\n", r.target.host, r.target.port));
         for f in &r.findings {
+            let cve = cves_for_finding(&f.id);
+            let cwe = cwe_for_finding(&f.id);
+            let refs = match (cve.is_empty(), cwe.is_empty()) {
+                (false, false) => format!("  CVE: {}  CWE: {}\n", cve, cwe),
+                (false, true) => format!("  CVE: {}\n", cve),
+                (true, false) => format!("  CWE: {}\n", cwe),
+                (true, true) => String::new(),
+            };
             buf.push_str(&format!(
-                "  - {} [{severity}] ({protocol:?}) CVSS {cvss_vector} {cvss_score:.1}  {title}\n    {details}\n",
+                "  - {} [{}] ({}) CVSS {} {:.1}  {}\n    {}\n{}",
                 f.id,
-                severity = f.severity,
-                protocol = f.protocol,
-                cvss_vector = f.cvss_vector,
-                cvss_score = f.cvss_score,
-                title = f.title,
-                details = f.details,
+                format!("{}", f.severity).to_uppercase(),
+                format!("{:?}", f.protocol).to_uppercase(),
+                f.cvss_vector,
+                f.cvss_score,
+                f.title,
+                f.details,
+                refs,
             ));
         }
     }
