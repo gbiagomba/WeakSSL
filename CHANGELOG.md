@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.8.0] - 2026-07-07
+
+### Fixed
+- `src/protocols/tls/certs.rs`: replaced three deprecated `openssl::asn1::Asn1StringRef::as_utf8()` calls with the non-deprecated `to_string()` method (lines 113, 120, 184) — `as_utf8()` truncated at the first interior NUL byte; `to_string()` handles the full string correctly
+- `src/cli.rs`: escaped the `<output-base>` literal in the `All` variant doc comment using backticks to suppress the `rustdoc::invalid_html_tags` warning
+
+### Dependencies
+- `quick-xml` updated `0.39` → `0.41`; no API call-site changes required (`nmap_xml.rs` uses only stable surface: `Reader::from_reader`, `config_mut().trim_text`, `read_event_into`, `Event` variants, `attributes()`)
+- `rusqlite` updated `0.38` → `0.39`; no API call-site changes required (`sqlite.rs` uses only stable surface: `Connection::open`, `execute_batch`, `execute`, `prepare`, `query_map`, `row.get`, `params![]`); 0.40 was skipped — `libsqlite3-sys 0.38.1` (its transitive dep) requires the unstable `cfg_select` nightly feature which is not available on stable Rust
+- `libsqlite3-sys` updated `0.36.0` → `0.37.0` (via rusqlite 0.39)
+- `hashlink` updated `0.11.1` → `0.12.1`
+
 ## [7.7.1] - 2026-07-07
 
 ### Fixed

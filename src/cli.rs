@@ -173,6 +173,6 @@ pub enum OutputFormat {
     Html,
     Csv,
     Sqlite,
-    /// Write all non-sqlite formats to <output-base>.{json,txt,table,html,csv}
+    /// Write all non-sqlite formats to `<base>.json/.txt/.table/.html/.csv`
     All,
 }

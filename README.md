@@ -4,7 +4,7 @@
   <img src="img/Pasted%20image%2020260313184423.png" alt="Handshaker Logo" width="600"/>
 </p>
 
-**Version:** v7.7.1 | **Author:** Gilles Biagomba | **License:** GPL-3.0
+**Version:** v7.8.0 | **Author:** Gilles Biagomba | **License:** GPL-3.0
 
 Handshaker is a native Rust secure-transport posture engine that probes TLS, SSH, and RDP endpoints without shelling out to external tools. It produces stable, machine-parseable finding IDs, SSL Labs–style grades, CVSS v3.1 risk scores, and supports compliance evaluation, benchmarking, longitudinal diffing, and AI-powered analysis.
 

@@ -110,14 +110,14 @@ fn extract_cert_summary(cert: &X509, host: &str) -> CertSummary {
         .subject_name()
         .entries_by_nid(openssl::nid::Nid::COMMONNAME)
         .next()
-        .and_then(|e| e.data().as_utf8().ok().map(|s| s.to_string()))
+        .and_then(|e| e.data().to_string().ok())
         .unwrap_or_else(|| host.to_string());
 
     let issuer = cert
         .issuer_name()
         .entries_by_nid(openssl::nid::Nid::COMMONNAME)
         .next()
-        .and_then(|e| e.data().as_utf8().ok().map(|s| s.to_string()))
+        .and_then(|e| e.data().to_string().ok())
         .unwrap_or_default();
 
     let not_before = cert.not_before().to_string();
@@ -181,8 +181,8 @@ fn hostname_matches(cert: &X509, host: &str) -> bool {
         .entries_by_nid(openssl::nid::Nid::COMMONNAME)
         .next()
     {
-        if let Ok(cn) = entry.data().as_utf8() {
-            return matches_dns(cn.as_ref(), host);
+        if let Ok(cn) = entry.data().to_string() {
+            return matches_dns(&cn, host);
         }
     }
     false
